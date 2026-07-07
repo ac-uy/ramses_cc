@@ -11,11 +11,7 @@
     "issue_tracker": "https://github.com/ramses-rf/ramses_cc/issues",
     "loggers": ["ramses_rf"],
     "requirements": [
-      "aioesphomeapi>=45.3.1",
-      "aiousbwatcher>=1.1.2",
-      "pyserial-asyncio-fast>=0.16",
-      "ramses-rf==0.57.10",
-      "serialx>=1.6.0"
+      "ramses-rf @ git+https://github.com/ac-uy/ramses_rf.git@master"
     ],
     "single_config_entry": true,
     "version": "0.57.10"
