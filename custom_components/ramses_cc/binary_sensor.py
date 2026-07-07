@@ -25,6 +25,7 @@ from ramses_rf.devices import (
     HgiGateway,
     OtbGateway,
     TrvActuator,
+    UfhController,
 )
 from ramses_rf.entity import Entity as RamsesRFEntity
 from ramses_rf.gateway import Gateway
@@ -42,6 +43,7 @@ from ramses_tx.const import (
     SZ_DHW_ENABLED,
     SZ_FAULT_PRESENT,
     SZ_FLAME_ACTIVE,
+    SZ_HEAT_DEMAND,
     SZ_IS_EVOFW3,
     SZ_OTC_ACTIVE,
     SZ_SUMMER_MODE,
@@ -531,5 +533,15 @@ BINARY_SENSOR_DESCRIPTIONS: tuple[RamsesBinarySensorEntityDescription, ...] = (
         ramses_rf_attr="bit_6_6",
         name="Bit 6/6",
         entity_registry_enabled_default=False,
+    ),
+    RamsesBinarySensorEntityDescription(
+        key="pump",
+        name="Pump",
+        ramses_rf_class=UfhController,
+        ramses_rf_attr=SZ_HEAT_DEMAND,
+        device_class=BinarySensorDeviceClass.RUNNING,
+        entity_category=None,
+        icon="mdi:pump",
+        icon_off="mdi:pump-off",
     ),
 )
