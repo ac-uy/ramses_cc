@@ -46,6 +46,7 @@ from ramses_tx.const import (
     SZ_HEAT_DEMAND,
     SZ_IS_EVOFW3,
     SZ_OTC_ACTIVE,
+    SZ_RELAY_DEMAND,
     SZ_SUMMER_MODE,
 )
 from ramses_tx.schemas import SZ_KNOWN_LIST
@@ -538,7 +539,7 @@ BINARY_SENSOR_DESCRIPTIONS: tuple[RamsesBinarySensorEntityDescription, ...] = (
         key="pump",
         name="Pump",
         ramses_rf_class=UfhController,
-        ramses_rf_attr=SZ_HEAT_DEMAND,
+        ramses_rf_attr=SZ_RELAY_DEMAND,
         device_class=BinarySensorDeviceClass.RUNNING,
         entity_category=None,
         icon="mdi:pump",
