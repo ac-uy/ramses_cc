@@ -310,7 +310,7 @@ async def test_async_setup_entry_full_descriptions(
 
     otb_dev = MagicMock(spec=OtbGateway)
     otb_dev.id = "10:111111"
-    otb_dev.heat_demand = 0.5
+    otb_dev.zone_demand = 0.5
     otb_dev.boiler_output_temp = 45.0
 
     with patch(

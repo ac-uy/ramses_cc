@@ -153,21 +153,21 @@ async def test_property_error_handling(
 
     # Reset cache to test initial falsy fallback
     water_heater._last_known_operation = None
-    mock_device.heat_demand = 0.0
+    mock_device.zone_demand = 0.0
 
     with patch.object(mock_device, "mode", new_callable=PropertyMock) as mock_mode:
         mock_mode.side_effect = TypeError
         # With TypeError, mode resolution is None.
-        # Fallback to heat_demand (0.0 -> falsy).
+        # Fallback to zone_demand (0.0 -> falsy).
         # _last_known is None, so defaults to STATE_AUTO.
         assert water_heater.current_operation == STATE_AUTO
 
-    # Test heat_demand active fallback
+    # Test zone_demand active fallback
     water_heater._last_known_operation = None
-    mock_device.heat_demand = 1.0
+    mock_device.zone_demand = 1.0
     with patch.object(mock_device, "mode", new_callable=PropertyMock) as mock_mode:
         mock_mode.side_effect = TypeError
-        # With heat_demand present, falls back to STATE_ON
+        # With zone_demand present, falls back to STATE_ON
         assert water_heater.current_operation == STATE_ON
 
     # Test is_away_mode_on error handling

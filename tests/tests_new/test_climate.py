@@ -39,7 +39,7 @@ from ramses_tx.const import SZ_MODE, SZ_SETPOINT, SZ_SYSTEM_MODE
 from ramses_tx.exceptions import ProtocolSendFailed, TransportError
 
 # Constants
-SZ_HEAT_DEMAND = "heat_demand"
+SZ_ZONE_DEMAND = "zone_demand"
 
 
 @pytest.fixture
@@ -126,15 +126,15 @@ async def test_controller_properties_and_attributes(
     assert controller.unique_id == "01:123456"
 
     # 1. extra_state_attributes
-    mock_device.heat_demand = MagicMock(return_value=0.5)
-    mock_device.heat_demands = MagicMock(return_value={"01": 0.5})
+    mock_device.zone_demand = MagicMock(return_value=0.5)
+    mock_device.zone_demands = MagicMock(return_value={"01": 0.5})
     mock_device.relay_demands = MagicMock(return_value={"01": 1.0})
     mock_device.system_mode = MagicMock(return_value={SZ_SYSTEM_MODE: SystemMode.AUTO})
     mock_device.tpi_params = MagicMock(return_value={"p": 1})
 
     attrs = controller.extra_state_attributes
-    assert attrs["heat_demand"] == 0.5
-    assert attrs["heat_demands"] == {"01": 0.5}
+    assert attrs["zone_demand"] == 0.5
+    assert attrs["zone_demands"] == {"01": 0.5}
     assert attrs["system_mode"] == {SZ_SYSTEM_MODE: SystemMode.AUTO}
 
     # Coverage for lines 213-214: system_mode with 'until'
@@ -152,12 +152,12 @@ async def test_controller_properties_and_attributes(
     z1 = MagicMock()
     z1.temperature = MagicMock(return_value=20.0)
     z1.setpoint = MagicMock(return_value=21.0)
-    z1.heat_demand = MagicMock(return_value=0.5)
+    z1.zone_demand = MagicMock(return_value=0.5)
 
     z2 = MagicMock()
     z2.temperature = MagicMock(return_value=22.0)
     z2.setpoint = MagicMock(return_value=19.0)
-    z2.heat_demand = MagicMock(return_value=0.0)
+    z2.zone_demand = MagicMock(return_value=0.0)
 
     mock_device.zones = [z1, z2]
     # (20 + 22) / 2 = 21.0
@@ -180,13 +180,13 @@ async def test_controller_properties_and_attributes(
 
     # 3. target_temperature logic (max of zones with demand)
     z1.setpoint = MagicMock(return_value=20.0)
-    z1.heat_demand = MagicMock(return_value=None)
+    z1.zone_demand = MagicMock(return_value=None)
     z2.setpoint = MagicMock(return_value=22.0)
-    z2.heat_demand = MagicMock(return_value=0.5)
+    z2.zone_demand = MagicMock(return_value=0.5)
 
     z3 = MagicMock()
     z3.setpoint = MagicMock(return_value=None)
-    z3.heat_demand = MagicMock(return_value=0.5)
+    z3.zone_demand = MagicMock(return_value=0.5)
 
     mock_device.zones = [z1, z2, z3]
     assert controller.target_temperature == 22.0
@@ -211,7 +211,7 @@ async def test_controller_modes_and_actions(
 
     # 1. hvac_action
     mock_device.system_mode = MagicMock(return_value=None)
-    mock_device.heat_demand = MagicMock(return_value=None)
+    mock_device.zone_demand = MagicMock(return_value=None)
     assert controller.hvac_action is None
 
     mock_device.system_mode = MagicMock(
@@ -220,13 +220,13 @@ async def test_controller_modes_and_actions(
     assert controller.hvac_action == HVACAction.OFF
 
     mock_device.system_mode = MagicMock(return_value={SZ_SYSTEM_MODE: SystemMode.AUTO})
-    mock_device.heat_demand = MagicMock(return_value=0.5)
+    mock_device.zone_demand = MagicMock(return_value=0.5)
     assert controller.hvac_action == HVACAction.HEATING
 
-    mock_device.heat_demand = MagicMock(return_value=0)
+    mock_device.zone_demand = MagicMock(return_value=0)
     assert controller.hvac_action == HVACAction.IDLE
 
-    mock_device.heat_demand = MagicMock(return_value=None)
+    mock_device.zone_demand = MagicMock(return_value=None)
     assert controller.hvac_action is None
 
     # 2. hvac_mode
@@ -354,7 +354,7 @@ async def test_zone_properties_and_config(
     mock_device.config = MagicMock(return_value={"min_temp": 5, "max_temp": 35})
     mock_device.temperature = MagicMock(return_value=19.5)
     mock_device.setpoint = MagicMock(return_value=20.0)
-    mock_device.heat_demand = MagicMock(return_value=None)
+    mock_device.zone_demand = MagicMock(return_value=None)
 
     zone = RamsesZone(mock_coordinator, mock_device, mock_description)
 
@@ -434,7 +434,7 @@ async def test_zone_modes_and_actions(
 
     # 1. hvac_action
     mock_device.tcs.system_mode = MagicMock(return_value=None)
-    mock_device.heat_demand = MagicMock(return_value=None)
+    mock_device.zone_demand = MagicMock(return_value=None)
     assert zone.hvac_action is None
 
     mock_device.tcs.system_mode = MagicMock(
@@ -445,13 +445,13 @@ async def test_zone_modes_and_actions(
     mock_device.tcs.system_mode = MagicMock(
         return_value={SZ_SYSTEM_MODE: SystemMode.AUTO}
     )
-    mock_device.heat_demand = MagicMock(return_value=0.5)
+    mock_device.zone_demand = MagicMock(return_value=0.5)
     assert zone.hvac_action == HVACAction.HEATING
 
-    mock_device.heat_demand = MagicMock(return_value=0)
+    mock_device.zone_demand = MagicMock(return_value=0)
     assert zone.hvac_action == HVACAction.IDLE
 
-    mock_device.heat_demand = MagicMock(return_value=None)
+    mock_device.zone_demand = MagicMock(return_value=None)
     assert zone.hvac_action is None
 
     # 2. hvac_mode

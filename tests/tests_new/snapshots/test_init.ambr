@@ -138,7 +138,7 @@
         <EntityStateAttribute.UNIT_OF_MEASUREMENT: 'unit_of_measurement'>: '%',
       }),
       'context': <ANY>,
-      'entity_id': 'sensor.ctl_01_145038_heat_demand',
+      'entity_id': 'sensor.ctl_01_145038_zone_demand',
       'last_changed': <ANY>,
       'last_reported': <ANY>,
       'last_updated': <ANY>,

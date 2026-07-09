@@ -43,7 +43,7 @@ from ramses_tx.const import (
     SZ_DHW_ENABLED,
     SZ_FAULT_PRESENT,
     SZ_FLAME_ACTIVE,
-    SZ_HEAT_DEMAND,
+    SZ_ZONE_DEMAND,
     SZ_IS_EVOFW3,
     SZ_OTC_ACTIVE,
     SZ_SUMMER_MODE,

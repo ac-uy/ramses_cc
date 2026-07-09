@@ -31,14 +31,14 @@ _CALL_LATER_DELAY: Final = 0  # from: custom_components.ramses_cc.services.py
 # fmt: off
 EXPECTED_ENTITIES = [  # TODO: add OTB entities, adjust list when adding sensors etc
     "18:006402-status",
-    "01:145038-status", "01:145038-sys_info", "01:145038", "01:145038-heat_demand", "01:145038-active_fault",
+    "01:145038-status", "01:145038-sys_info", "01:145038", "01:145038-zone_demand", "01:145038-active_fault",
 
-    "01:145038_02", "01:145038_02-heat_demand", "01:145038_02-window_open",
-    "01:145038_0A", "01:145038_0A-heat_demand", "01:145038_0A-window_open",
-    "01:145038_HW", "01:145038_HW-heat_demand", "01:145038_HW-relay_demand",
+    "01:145038_02", "01:145038_02-zone_demand", "01:145038_02-window_open",
+    "01:145038_0A", "01:145038_0A-zone_demand", "01:145038_0A-window_open",
+    "01:145038_HW", "01:145038_HW-zone_demand", "01:145038_HW-relay_demand",
 
-    "04:056053-battery_low", "04:056053-heat_demand", "04:056053-temperature", "04:056053-window_open",
-    "04:189082-battery_low", "04:189082-heat_demand", "04:189082-temperature", "04:189082-window_open",
+    "04:056053-battery_low", "04:056053-zone_demand", "04:056053-temperature", "04:056053-window_open",
+    "04:189082-battery_low", "04:189082-zone_demand", "04:189082-temperature", "04:189082-window_open",
 
     "07:046947-battery_low", "07:046947-temperature",
 

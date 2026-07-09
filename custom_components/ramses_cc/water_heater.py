@@ -143,8 +143,8 @@ class RamsesWaterHeater(RamsesEntity, WaterHeaterEntity):
                 )
         else:
             # Fallback to evaluating active heat demand if mode expires
-            heat_demand = resolve_async_attr(self, self._device, "heat_demand")
-            if heat_demand:
+            zone_demand = resolve_async_attr(self, self._device, "zone_demand")
+            if zone_demand:
                 self._last_known_operation = STATE_ON
             elif self._last_known_operation is None:
                 self._last_known_operation = STATE_AUTO

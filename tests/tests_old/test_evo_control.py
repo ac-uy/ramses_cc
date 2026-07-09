@@ -278,8 +278,8 @@ async def test_namespace(hass: HomeAssistant) -> None:
         assert binary.state in (STATE_ON, STATE_OFF, None)
 
     #
-    # evo_control uses: sensor.${cid}_heat_demand
-    uid = f"{CTL_ID}-heat_demand"
+    # evo_control uses: sensor.${cid}_zone_demand
+    uid = f"{CTL_ID}-zone_demand"
 
     sensor: SensorEntity = [e for e in sensors if e.unique_id == uid][0]
     assert sensor.unique_id == uid
@@ -302,9 +302,9 @@ async def test_namespace(hass: HomeAssistant) -> None:
     assert sensor.state is None or 0.0 <= sensor.state <= 100.0
 
     #
-    # evo_control uses: sensor.${cid}_${haZid}_heat_demand
+    # evo_control uses: sensor.${cid}_${haZid}_zone_demand
     for zon_idx in ("02", "0A", "HW"):  # via walking the schema
-        uid = f"{CTL_ID}_{zon_idx}-heat_demand"
+        uid = f"{CTL_ID}_{zon_idx}-zone_demand"
 
         sensor = [e for e in sensors if e.unique_id == uid][0]
         assert sensor.unique_id == uid

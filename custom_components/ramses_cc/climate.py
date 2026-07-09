@@ -240,8 +240,8 @@ class RamsesController(RamsesEntity, ClimateEntity):
             system_mode["until"] = fields_to_aware(system_mode["until"])
 
         return super().extra_state_attributes | {
-            "heat_demand": resolve_async_attr(self, self._device, "heat_demand"),
-            "heat_demands": resolve_async_attr(self, self._device, "heat_demands"),
+            "zone_demand": resolve_async_attr(self, self._device, "zone_demand"),
+            "zone_demands": resolve_async_attr(self, self._device, "zone_demands"),
             "relay_demands": resolve_async_attr(self, self._device, "relay_demands"),
             "system_mode": system_mode,
             "tpi_params": resolve_async_attr(self, self._device, "tpi_params"),
@@ -254,16 +254,16 @@ class RamsesController(RamsesEntity, ClimateEntity):
         :return: The HVAC action.
         """
         system_mode = resolve_async_attr(self, self._device, "system_mode")
-        # If system_mode is None, we fall back to heat_demand instead
+        # If system_mode is None, we fall back to zone_demand instead
         # of immediately returning None (unable to determine).
         if system_mode is not None:
             if system_mode[SZ_SYSTEM_MODE] == SystemMode.HEAT_OFF:
                 return HVACAction.OFF
 
-        heat_demand = resolve_async_attr(self, self._device, "heat_demand")
-        if heat_demand:
+        zone_demand = resolve_async_attr(self, self._device, "zone_demand")
+        if zone_demand:
             return HVACAction.HEATING
-        if heat_demand is not None:
+        if zone_demand is not None:
             return HVACAction.IDLE
 
         return None
@@ -308,7 +308,7 @@ class RamsesController(RamsesEntity, ClimateEntity):
         temps = [
             resolve_async_attr(self, z, "setpoint")
             for z in zones
-            if resolve_async_attr(self, z, "heat_demand") is not None
+            if resolve_async_attr(self, z, "zone_demand") is not None
         ]
         if temps:
             self._last_known_targ_temp = max(temps)
@@ -549,15 +549,15 @@ class RamsesZone(RamsesEntity, ClimateEntity):
         :return: The HVAC action.
         """
         system_mode = resolve_async_attr(self, self._device.tcs, "system_mode")
-        # If system_mode is None, we proceed to check zone heat_demand
+        # If system_mode is None, we proceed to check zone_demand
         if system_mode is not None:
             if system_mode[SZ_SYSTEM_MODE] == SystemMode.HEAT_OFF:
                 return HVACAction.OFF
 
-        heat_demand = resolve_async_attr(self, self._device, "heat_demand")
-        if heat_demand:
+        zone_demand = resolve_async_attr(self, self._device, "zone_demand")
+        if zone_demand:
             return HVACAction.HEATING
-        if heat_demand is not None:
+        if zone_demand is not None:
             return HVACAction.IDLE
         return None
 
