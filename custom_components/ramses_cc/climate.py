@@ -66,14 +66,15 @@ from .schemas import SCH_SET_SYSTEM_MODE_EXTRA, SCH_SET_ZONE_MODE_EXTRA
 _LOGGER = logging.getLogger(__name__)
 
 MODE_TCS_TO_HA: Final[dict[str, HVACMode]] = {
-    SystemMode.AUTO: HVACMode.HEAT,  # NOTE: don't use AUTO
+    SystemMode.AUTO: HVACMode.AUTO,
     SystemMode.HEAT_OFF: HVACMode.OFF,
-    SystemMode.RESET: HVACMode.HEAT,
+    SystemMode.RESET: HVACMode.AUTO,
 }
 MODE_HA_TO_TCS: Final[dict[HVACMode, str]] = {
-    HVACMode.HEAT: SystemMode.AUTO,
+    HVACMode.AUTO: SystemMode.AUTO,
     HVACMode.OFF: SystemMode.HEAT_OFF,
-    HVACMode.AUTO: SystemMode.RESET,  # not all systems support this
+    HVACMode.HEAT: SystemMode.AUTO,
+    HVACMode.COOL: SystemMode.AUTO,
 }
 
 PRESET_TCS_TO_HA: Final[dict[str, str]] = {
@@ -102,6 +103,7 @@ MODE_ZONE_TO_HA: Final[dict[str, HVACMode]] = {
 }
 MODE_HA_TO_ZONE: Final[dict[HVACMode, str]] = {
     HVACMode.HEAT: ZoneMode.PERMANENT,
+    HVACMode.COOL: ZoneMode.PERMANENT,
     HVACMode.AUTO: ZoneMode.SCHEDULE,
 }
 
@@ -262,6 +264,9 @@ class RamsesController(RamsesEntity, ClimateEntity):
 
         zone_demand = resolve_async_attr(self, self._device, "zone_demand")
         if zone_demand:
+            cooling = resolve_async_attr(self, self._device, "cooling_active")
+            if cooling is True:
+                return HVACAction.COOLING
             return HVACAction.HEATING
         if zone_demand is not None:
             return HVACAction.IDLE
@@ -280,7 +285,12 @@ class RamsesController(RamsesEntity, ClimateEntity):
                 return HVACMode.OFF
             if system_mode[SZ_SYSTEM_MODE] == SystemMode.AWAY:
                 return HVACMode.AUTO  # users can't adjust setpoints away
-        return HVACMode.HEAT
+        cooling = resolve_async_attr(self, self._device, "cooling_active")
+        if cooling is True:
+            return HVACMode.COOL
+        if cooling is False:
+            return HVACMode.HEAT
+        return HVACMode.HEAT  # default when no 2D49 received
 
     @property
     def preset_mode(self) -> str | None:
@@ -556,6 +566,9 @@ class RamsesZone(RamsesEntity, ClimateEntity):
 
         zone_demand = resolve_async_attr(self, self._device, "zone_demand")
         if zone_demand:
+            cooling = resolve_async_attr(self, self._device.tcs, "cooling_active")
+            if cooling is True:
+                return HVACAction.COOLING
             return HVACAction.HEATING
         if zone_demand is not None:
             return HVACAction.IDLE
@@ -581,7 +594,12 @@ class RamsesZone(RamsesEntity, ClimateEntity):
         config = resolve_async_attr(self, self._device, "config")
         if config and mode[SZ_SETPOINT] <= config["min_temp"]:
             return HVACMode.OFF
-        return HVACMode.HEAT
+        cooling = resolve_async_attr(self, self._device.tcs, "cooling_active")
+        if cooling is True:
+            return HVACMode.COOL
+        if cooling is False:
+            return HVACMode.HEAT
+        return HVACMode.HEAT  # default when no 2D49 received
 
     @property
     def max_temp(self) -> float:
