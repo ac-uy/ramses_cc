@@ -142,7 +142,7 @@ class RamsesWaterHeater(RamsesEntity, WaterHeaterEntity):
                     STATE_BOOST if mode.get(SZ_ACTIVE) else STATE_OFF
                 )
         else:
-            # Fallback to evaluating active heat demand if mode expires
+            # Fallback to evaluating active zone demand if mode expires
             zone_demand = resolve_async_attr(self, self._device, "zone_demand")
             if zone_demand:
                 self._last_known_operation = STATE_ON
