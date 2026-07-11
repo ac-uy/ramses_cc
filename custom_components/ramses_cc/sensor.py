@@ -308,8 +308,8 @@ SENSOR_DESCRIPTIONS: tuple[RamsesSensorEntityDescription, ...] = (
         ramses_rf_class=OtbGateway,
         ramses_rf_attr=SZ_ZONE_DEMAND,
         name="Zone demand",
-        icon="mdi:radiator",
-        ramses_cc_icon_off="mdi:radiator-off",
+        icon="mdi:gauge",
+        ramses_cc_icon_off="mdi:gauge",
         native_unit_of_measurement=PERCENTAGE,
     ),
     RamsesSensorEntityDescription(  # not OtbGateway
@@ -317,8 +317,8 @@ SENSOR_DESCRIPTIONS: tuple[RamsesSensorEntityDescription, ...] = (
         ramses_rf_class=System | TrvActuator | UfhController | ZoneBase,
         ramses_rf_attr=SZ_ZONE_DEMAND,
         name="Zone demand",
-        icon="mdi:radiator",
-        ramses_cc_icon_off="mdi:radiator-off",
+        icon="mdi:gauge",
+        ramses_cc_icon_off="mdi:gauge",
         native_unit_of_measurement=PERCENTAGE,
     ),
     RamsesSensorEntityDescription(

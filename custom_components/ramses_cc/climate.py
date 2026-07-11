@@ -147,7 +147,7 @@ class RamsesController(RamsesEntity, ClimateEntity):
 
     _device: Evohome
 
-    _attr_icon: str = "mdi:thermostat"
+    _attr_icon: str = "mdi:sun-snowflake"
     _attr_hvac_modes: list[HVACMode] = list(MODE_HA_TO_TCS)
     _attr_max_temp: None = None
     _attr_min_temp: None = None
@@ -468,7 +468,7 @@ class RamsesZone(RamsesEntity, ClimateEntity):
 
     _device: Zone
 
-    _attr_icon: str = "mdi:radiator"
+    _attr_icon: str = "mdi:sun-snowflake"
     _attr_hvac_modes: list[HVACMode] = list(MODE_HA_TO_ZONE)
     _attr_precision: float = PRECISION_TENTHS
     _attr_preset_modes: list[str] = list(PRESET_HA_TO_ZONE) + [
