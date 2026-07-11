@@ -588,12 +588,10 @@ class RamsesZone(RamsesEntity, ClimateEntity):
                 return HVACMode.OFF
 
         mode = resolve_async_attr(self, self._device, "mode")
-        if mode is None or mode.get(SZ_SETPOINT) is None:
-            return None  # unable to determine
-
-        config = resolve_async_attr(self, self._device, "config")
-        if config and mode[SZ_SETPOINT] <= config["min_temp"]:
-            return HVACMode.OFF
+        if mode is not None and mode.get(SZ_SETPOINT) is not None:
+            config = resolve_async_attr(self, self._device, "config")
+            if config and mode[SZ_SETPOINT] <= config["min_temp"]:
+                return HVACMode.OFF
         tcs_mode = resolve_async_attr(self, self._device.tcs, "mode")
         if tcs_mode == "cool":
             return HVACMode.COOL
