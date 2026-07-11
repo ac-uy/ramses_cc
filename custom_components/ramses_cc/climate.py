@@ -290,7 +290,7 @@ class RamsesController(RamsesEntity, ClimateEntity):
             return HVACMode.COOL
         if mode == "heat":
             return HVACMode.HEAT
-        return HVACMode.HEAT  # default when no 2D49 received
+        return HVACMode.AUTO  # default when no 2D49 received yet
 
     @property
     def preset_mode(self) -> str | None:
@@ -599,7 +599,7 @@ class RamsesZone(RamsesEntity, ClimateEntity):
             return HVACMode.COOL
         if tcs_mode == "heat":
             return HVACMode.HEAT
-        return HVACMode.HEAT  # default when no 2D49 received
+        return HVACMode.AUTO  # default when no 2D49 received yet
 
     @property
     def max_temp(self) -> float:
