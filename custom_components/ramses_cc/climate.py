@@ -264,7 +264,7 @@ class RamsesController(RamsesEntity, ClimateEntity):
 
         zone_demand = resolve_async_attr(self, self._device, "zone_demand")
         if zone_demand:
-            cooling = resolve_async_attr(self, self._device, "cooling_mode")
+            cooling = resolve_async_attr(self, self._device, "cooling_active")
             if cooling is True:
                 return HVACAction.COOLING
             return HVACAction.HEATING
@@ -285,7 +285,7 @@ class RamsesController(RamsesEntity, ClimateEntity):
                 return HVACMode.OFF
             if system_mode[SZ_SYSTEM_MODE] == SystemMode.AWAY:
                 return HVACMode.AUTO  # users can't adjust setpoints away
-        cooling = resolve_async_attr(self, self._device, "cooling_mode")
+        cooling = resolve_async_attr(self, self._device, "cooling_active")
         if cooling is True:
             return HVACMode.COOL
         if cooling is False:
@@ -566,7 +566,7 @@ class RamsesZone(RamsesEntity, ClimateEntity):
 
         zone_demand = resolve_async_attr(self, self._device, "zone_demand")
         if zone_demand:
-            cooling = resolve_async_attr(self, self._device.tcs, "cooling_mode")
+            cooling = resolve_async_attr(self, self._device.tcs, "cooling_active")
             if cooling is True:
                 return HVACAction.COOLING
             return HVACAction.HEATING
@@ -594,7 +594,7 @@ class RamsesZone(RamsesEntity, ClimateEntity):
         config = resolve_async_attr(self, self._device, "config")
         if config and mode[SZ_SETPOINT] <= config["min_temp"]:
             return HVACMode.OFF
-        cooling = resolve_async_attr(self, self._device.tcs, "cooling_mode")
+        cooling = resolve_async_attr(self, self._device.tcs, "cooling_active")
         if cooling is True:
             return HVACMode.COOL
         if cooling is False:
