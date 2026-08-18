@@ -909,7 +909,7 @@ _DEV_KLASSES_HEAT: dict[str, dict[Code, dict[VerbT, Any]]] = {
         Code._3110: {I_: {}},  # Spider Autotemp
         Code._3120: {I_: {}},  # Added for Phase 2.95 snapshot parity
         Code._3150: {I_: {}},
-        Code._3EF0: {I_: {}},  # HCC100 UFH controller: pump status
+        Code._3EF0: {I_: {}, RQ: {}, RP: {}},  # HCC100 UFH controller: pump status (RQ experimental)
         Code._4E01: {I_: {}},  # Spider Autotemp Zone controller
         Code._4E02: {I_: {}},  # Added for Phase 2.95 snapshot parity
         Code._4E04: {I_: {}, W_: {}},  # Added W_ for Phase 2.95 snapshot parity

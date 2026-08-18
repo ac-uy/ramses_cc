@@ -243,6 +243,60 @@ class RamsesLogbookBinarySensor(RamsesBinarySensor):
         return self._last_known_state
 
 
+class RamsesPumpBinarySensor(RamsesBinarySensor):
+    """Pump binary sensor with periodic RQ/3EF0 polling for faster updates.
+
+    HCC100 UFCs broadcast 3EF0 pump status on variable intervals (20-80 min).
+    This subclass sends RQ/3EF0 every 5 minutes to get faster pump state updates.
+    """
+
+    _POLL_INTERVAL = 300  # 5 minutes in seconds
+
+    async def async_added_to_hass(self) -> None:
+        """Start periodic RQ/3EF0 polling when entity is added."""
+        await super().async_added_to_hass()
+        self._unsub_poll: Any = None
+        self._start_polling()
+
+    def _start_polling(self) -> None:
+        """Schedule the next poll."""
+        from homeassistant.helpers.event import async_call_later
+
+        self._unsub_poll = async_call_later(
+            self.hass, self._POLL_INTERVAL, self._poll_3ef0
+        )
+
+    async def _poll_3ef0(self, _now: Any = None) -> None:
+        """Send RQ/3EF0 to the UFC to request pump state update."""
+        try:
+            gwy = getattr(self._device, "_gwy", None)
+            if gwy is None:
+                gwy = getattr(getattr(self._device, "_tcs", None), "_gwy", None)
+            if gwy:
+                cmd = Command.from_cli(f"RQ {self._device.id} 3EF0 00")
+                await gwy.async_send_cmd(cmd)
+                _LOGGER.debug(
+                    "Sent RQ/3EF0 to %s for pump state refresh",
+                    self._device.id,
+                )
+        except Exception as err:
+            _LOGGER.debug(
+                "Failed to poll 3EF0 for %s: %s",
+                self.entity_id,
+                err,
+            )
+        finally:
+            # Reschedule regardless of success/failure
+            self._start_polling()
+
+    async def async_will_remove_from_hass(self) -> None:
+        """Cancel polling when entity is removed."""
+        if self._unsub_poll:
+            self._unsub_poll()
+            self._unsub_poll = None
+        await super().async_will_remove_from_hass()
+
+
 class RamsesSystemBinarySensor(RamsesBinarySensor):
     """Legacy representation of a system for EvoControl compatibility.
 
@@ -537,6 +591,7 @@ BINARY_SENSOR_DESCRIPTIONS: tuple[RamsesBinarySensorEntityDescription, ...] = (
     RamsesBinarySensorEntityDescription(
         key="pump",
         name="Pump",
+        ramses_cc_class=RamsesPumpBinarySensor,
         ramses_rf_class=UfhController,
         ramses_rf_attr="pump_active",
         device_class=BinarySensorDeviceClass.RUNNING,

@@ -304,17 +304,18 @@ class UfhController(Parent, DeviceHeat):  # UFC (02):
         """Return True if the UFH pump relay is active.
 
         Primary source: 3EF0 byte 3 flags (0x10=cooling, 0x02=heating).
-        Fallback: zone_demand > 10% from 3150 packets (always available).
-        The HCC100 only broadcasts 3EF0 when 2D49 binding is active.
+        After HA restart the HCC100s stop setting byte3 until binding re-establishes.
+        Fallback: collector ΔT or sustained demand (not yet implemented).
         """
         # Read from global parser cache (set by parser_3ef0 for UFC devices)
         from ..parsers.heating import _UFC_PUMP_STATE
         from_3ef0 = _UFC_PUMP_STATE.get(self.id)
-        if from_3ef0 is not None:
-            return from_3ef0
+        if from_3ef0:  # Only trust cached True (pump confirmed ON via 3EF0)
+            return True
 
         # Fallback: infer pump state from zone demand (3150 packets).
-        # zone_demand is on a 0.0–1.0 scale (hex_to_percent), threshold 10%.
+        # NOTE: demand 0-3% is noise — HCC100 reports this even with pump OFF.
+        # Only sustained high demand (>10%) reliably indicates pump activity.
         demand: float | None = None
         try:
             state = getattr(self, "demand_state", None)
@@ -326,8 +327,10 @@ class UfhController(Parent, DeviceHeat):  # UFC (02):
             )
 
         if demand is not None:
-            return demand > 0.10
-        return None
+            return demand > 0.10  # 10% threshold — below this is valve noise
+
+        # No demand data available — return cached 3EF0 state (may be stale False)
+        return from_3ef0
 
     async def mode(self) -> str | None:  # 2D49
         """Return 'cool' or None from 2D49 cooling demand state."""
