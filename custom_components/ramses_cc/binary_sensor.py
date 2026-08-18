@@ -256,6 +256,10 @@ class RamsesPumpBinarySensor(RamsesBinarySensor):
         """Start periodic RQ/3EF0 polling when entity is added."""
         await super().async_added_to_hass()
         self._unsub_poll: Any = None
+        # Poll shortly after startup for fresh pump state (30s delay for gateway init)
+        from homeassistant.helpers.event import async_call_later
+
+        async_call_later(self.hass, 30, self._poll_3ef0)
         self._start_polling()
 
     def _start_polling(self) -> None:
